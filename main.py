@@ -154,7 +154,7 @@ def main():
             CommandHandler("order", start_normal_order),
     CommandHandler("broadcast", start_broadcast_order),
 ],
-        ],
+        
         states={
             ORDER_TEXT_WAIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_order_text)],
             BROADCAST_TEXT_WAIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_order_text)],
