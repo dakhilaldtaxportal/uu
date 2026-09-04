@@ -151,6 +151,9 @@ def main():
         entry_points=[
             CallbackQueryHandler(start_normal_order, pattern="^vendor_order_normal$"),
             CallbackQueryHandler(start_broadcast_order, pattern="^vendor_order_broadcast$"),
+            CommandHandler("order", start_normal_order),
+    CommandHandler("broadcast", start_broadcast_order),
+],
         ],
         states={
             ORDER_TEXT_WAIT: [MessageHandler(filters.TEXT & ~filters.COMMAND, receive_order_text)],
