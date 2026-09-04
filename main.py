@@ -1,7 +1,8 @@
 import logging
 import threading
 from datetime import datetime, timezone
-
+import asyncio
+asyncio.set_event_loop(asyncio.new_event_loop())
 from flask import Flask
 from telegram import Update
 from telegram.ext import (
