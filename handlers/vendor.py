@@ -52,31 +52,50 @@ async def vendor_myinfo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         session.close()
 
 async def start_normal_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    if not is_vendor(query.from_user.id):
-        return
+    # Callback বা Command দুটো থেকেই আসতে পারে
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+        user_id = query.from_user.id
+        target = query.message
+    else:
+        user_id = update.effective_user.id
+        target = update.message
+
+    if not is_vendor(user_id):
+        await target.reply_text("আপনি Vendor হিসেবে রেজিস্টার্ড নন।")
+        return ConversationHandler.END
+
     context.user_data["order_type"] = "normal"
-    await query.message.reply_text(
+    await target.reply_text(
         "📦 Normal Order\n\n"
         "অর্ডারের বিবরণ + Customer-এর Google Maps Link একসাথে পাঠান।\n\n"
         "উদাহরণ:\n২ পিস বার্গার\nhttps://maps.app.goo.gl/xxxxx"
     )
     return ORDER_TEXT_WAIT
 
+
 async def start_broadcast_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    if not is_vendor(query.from_user.id):
-        return
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+        user_id = query.from_user.id
+        target = query.message
+    else:
+        user_id = update.effective_user.id
+        target = update.message
+
+    if not is_vendor(user_id):
+        await target.reply_text("আপনি Vendor হিসেবে রেজিস্টার্ড নন।")
+        return ConversationHandler.END
+
     context.user_data["order_type"] = "broadcast"
-    await query.message.reply_text(
+    await target.reply_text(
         "📢 Broadcast Order (৫ কিমি)\n\n"
         "অর্ডারের বিবরণ + Customer-এর Google Maps Link পাঠান।\n"
         "Broadcast-এ Rider-কে extra টাকা দিতে হবে।"
     )
     return BROADCAST_TEXT_WAIT
-
 async def receive_order_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     from handlers.order import create_and_dispatch_order
     text = update.message.text or ""
